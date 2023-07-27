@@ -1,0 +1,12 @@
+# Spacefile Docs: https://deta.space/docs/en/build/reference/spacefile
+v: 0
+icon: ./icon.png
+app_name: "FastAPI"
+micros:
+  - name: FastAPI
+    src: .
+    engine: python3.9
+    run: uvicorn main:app
+    primary: true
+    public_routes:
+      - "/*"

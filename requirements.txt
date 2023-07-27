@@ -1,0 +1,5 @@
+fastapi
+python-multipart
+pymongo
+uvicorn[standard]
+pydantic_settings
