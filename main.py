@@ -37,9 +37,8 @@ app.include_router(animes.router)
 # Static Files
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-# http://127.0.0.1:8000/static/images/lucy.jpg
+# http://127.0.0.1:8000/static/lucy.jpg
 
-# Root
 
 @app.get("/")
 async def root():
