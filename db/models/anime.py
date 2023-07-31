@@ -10,3 +10,12 @@ class Anime(BaseModel):
     season: str
     genres: str
     image_url: str
+
+
+class AnimeToCreate(BaseModel):
+    name: str
+    description: str
+    episodes: int
+    season: str
+    genres: str
+    image_url: str

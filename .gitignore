@@ -2,3 +2,6 @@
 __pycache__
 .venv
 file.env
+build
+dist
+anime_post_gui.spec

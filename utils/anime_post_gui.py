@@ -1,6 +1,10 @@
 import tkinter as tk
 import requests
 import json
+# pip install requests
+# pip install pyinstaller
+# cd utils
+# pyinstaller --onefile anime_post_gui.py
 
 
 def submit():
@@ -60,12 +64,12 @@ def submit():
             window.response_message.pack_forget()
         # Crear nuevo label con mensaje de error
         response_message = tk.Label(
-            window, text="Validation Error. Please check your data!", font=("Arial", 16), fg="red")
+            window, text="Anime's name already exists or episodes isn't an integer!", font=("Arial", 16), fg="red")
         response_message.pack()
         window.response_message = response_message
 
     # Agregar mensaje si el código de estado es 404 Not Found
-    elif response.status_code == 422:
+    elif response.status_code == 404:
         # Eliminar label existente si es que hay alguno
         if hasattr(window, "response_message"):
             window.response_message.pack_forget()

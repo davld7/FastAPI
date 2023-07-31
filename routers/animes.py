@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from db.models.anime import Anime
+from db.models.anime import Anime, AnimeToCreate
 from db.schemas.anime import anime_schema, animes_schema
 from db.client import animes_collection
 from bson import ObjectId
@@ -44,12 +44,11 @@ async def anime(name: str):
 
 
 @router.post("/", response_model=Anime, status_code=status.HTTP_201_CREATED)
-async def anime(anime: Anime):
+async def anime(anime: AnimeToCreate):
     if type(search_anime("name", anime.name)) == Anime:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="El anime ya existe.")
     anime_dict = dict(anime)
-    del anime_dict["id"]
     id = animes_collection.insert_one(anime_dict).inserted_id
     new_anime = anime_schema(animes_collection.find_one({"_id": id}))
     return Anime(**new_anime)
