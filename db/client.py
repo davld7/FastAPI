@@ -20,5 +20,5 @@ from env_file import settings
 
 # FastAPI Cluster
 client = MongoClient(settings.mongodb_uri)
-db = client["fastapi"]
-animes_collection = db["animes"]
+db = client.get_database("fastapi")
+animes_collection = db.get_collection("animes")

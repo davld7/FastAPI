@@ -50,7 +50,7 @@ def submit():
         # Asignar el ID al campo de entrada de texto
         id_entry.delete(0, tk.END)
         id_entry.insert(
-            0, f'https://fastapi-1-v7692141.deta.app/animes/search_id/{anime_dict["id"]}')
+            0, f'https://fastapi-1-v7692141.deta.app/animes/id/{anime_dict["id"]}')
         # Crear nuevo label con mensaje de éxito
         response_message = tk.Label(
             window, text="Anime added successfully!", font=("Arial", 16), fg="green")

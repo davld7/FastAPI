@@ -1,12 +1,15 @@
-def anime_schema(anime) -> dict:
+from typing import Dict, List
+
+
+def anime_schema(anime) -> Dict:
     return {"id": str(anime["_id"]),
-            "name": str(anime["name"]),
-            "description": str(anime["description"]),
-            "episodes": int(anime["episodes"]),
-            "season": str(anime["season"]),
-            "genres": str(anime["genres"]),
-            "image_url": str(anime["image_url"])}
+            "name": anime["name"],
+            "description": anime["description"],
+            "episodes": anime["episodes"],
+            "season": anime["season"],
+            "genres": anime["genres"],
+            "image_url": anime["image_url"]}
 
 
-def animes_schema(animes) -> list:
+def animes_schema(animes) -> List:
     return sorted([anime_schema(anime) for anime in animes], key=lambda x: x['name'].lower())

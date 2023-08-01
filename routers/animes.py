@@ -1,51 +1,101 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Path
 from db.models.anime import Anime, AnimeToCreate
 from db.schemas.anime import anime_schema, animes_schema
 from db.client import animes_collection
 from bson import ObjectId
 from pymongo.errors import PyMongoError
+from typing import List
 
 router = APIRouter(prefix="/animes",
                    tags=["animes"],
-                   responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado."}})
+                   responses={status.HTTP_404_NOT_FOUND: {"error": "Not found."}})
 
 
-@router.get("/", response_model=list[Anime])
-async def animes():
-    return animes_schema(animes_collection.find())
+@router.get("/", response_model=List[Anime])
+async def get_animes():
+    """
+    Get all the animes.
+
+    Returns:
+    - `List[Anime]`: List of animes.
+    """
+    animes = animes_collection.find()
+    return animes_schema(animes)
 
 
-def search_anime(field: str, key):
-    try:
-        anime = animes_collection.find_one({field: key})
+def find_anime(key, value):
+    """
+    Find anime by key and value.
+
+    Parameters:
+    - `key`: Key.
+    - `value`: Value.
+
+    Returns:
+    - `Anime`: Anime.
+
+    Raises:
+    - `HTTPException`: If anime not found.
+    """
+    anime = animes_collection.find_one({key: value})
+    if anime:
         return Anime(**anime_schema(anime))
-    except:
-        return {"error": "No se ha encontrado el anime."}
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
+                            "error": "Anime not found."})
 
 
-@router.get("/search_id/{id}")  # Path
-async def anime(id: str):
-    return search_anime("_id", ObjectId(id))
+# Path
+
+@router.get("/id/{id}", response_model=Anime, status_code=status.HTTP_200_OK)
+async def anime(id: str = Path(..., min_length=24, max_length=24, regex="^[0-9a-fA-F]{24}$", description="Id of the anime")):
+    """
+    Get anime by id.
+
+    Parameters:
+    - `id`: Id of the anime.
+
+    Returns:
+    - `Anime`: Anime.
+
+    Raises:
+    - `HTTPException`: If anime not found.
+    """
+    return find_anime("_id", ObjectId(id))
 
 
-@router.get("/search_id/")  # Query
-async def anime(id: str):
-    return search_anime("_id", ObjectId(id))
+@router.get("/name/{name}", response_model=Anime, status_code=status.HTTP_200_OK)
+async def anime(name: str = Path(..., description="Name of the anime")):
+    """
+    Get anime by name.
+
+    Parameters:
+    - `name`: Name of the anime.
+
+    Returns:
+    - `Anime`: Anime.
+
+    Raises:
+    - `HTTPException`: If anime not found.
+    """
+    return find_anime("name", name)
 
 
-@router.get("/search/{name}")  # Path
-async def anime(name: str):
-    return search_anime("name", name)
+# Query
+
+# @router.get("/search_id/")
+# async def anime(id: str):
+#     return find_anime("_id", ObjectId(id))
 
 
-@router.get("/search/")  # Query
-async def anime(name: str):
-    return search_anime("name", name)
+# @router.get("/search/")
+# async def anime(name: str):
+#     return find_anime("name", name)
 
 
 @router.post("/", response_model=Anime, status_code=status.HTTP_201_CREATED)
 async def anime(anime: AnimeToCreate):
-    if type(search_anime("name", anime.name)) == Anime:
+    if type(find_anime("name", anime.name)) == Anime:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="El anime ya existe.")
     anime_dict = dict(anime)
@@ -63,7 +113,7 @@ async def anime(anime: Anime):
             {"_id": ObjectId(anime.id)}, anime_dict)
     except:
         return {"error": "No se actualizó el anime."}
-    return search_anime("_id", ObjectId(anime.id))
+    return find_anime("_id", ObjectId(anime.id))
 
 
 @router.delete("/{id}", status_code=status.HTTP_200_OK)
