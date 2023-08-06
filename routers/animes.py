@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Path
+from fastapi import APIRouter, HTTPException, status, Path, Query
 from db.models.anime import Anime, AnimeToCreate
 from db.schemas.anime import anime_schema, animes_schema
 from db.client import animes_collection
@@ -26,6 +26,28 @@ async def get_animes():
     - `List[Anime]`: List of animes.
     """
     animes = animes_collection.find().collation(collation).sort(sort)
+    return animes_schema(animes)
+
+
+@router.get("/page", response_model=List[Anime])
+async def get_paginated_animes(number: int = Query(1, description="Page number to retrieve. Defaults to 1.")):
+    """
+    Get paginated animes.
+
+    Parameters:
+    - `number` (int): Page number to retrieve (default: 1).
+
+    Returns:
+    - `List[Anime]`: List of paginated animes.
+    """
+    # Calculate the number of documents to skip
+    page_size = 4
+    skip_count = (number - 1) * page_size
+
+    # Perform the query on the collection with pagination and sorting
+    animes = animes_collection.find().collation(
+        collation).sort(sort).skip(skip_count).limit(page_size)
+
     return animes_schema(animes)
 
 
