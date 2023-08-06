@@ -19,3 +19,8 @@ class AnimeToCreate(BaseModel):
     season: str
     genres: str
     image_url: str
+
+
+class TotalAnimesPages(BaseModel):
+    total_animes: int
+    total_pages: int

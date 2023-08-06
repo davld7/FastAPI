@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Path, Query
-from db.models.anime import Anime, AnimeToCreate
-from db.schemas.anime import anime_schema, animes_schema
+from db.models.anime import Anime, AnimeToCreate, TotalAnimesPages
+from db.schemas.anime import anime_schema, animes_schema, total_animes_pages_schema
 from db.client import animes_collection
 from bson import ObjectId
 from pymongo.errors import PyMongoError
@@ -55,16 +55,16 @@ async def get_paginated_animes(number: int = Query(1, description="Page number t
     return animes_schema(animes)
 
 
-@router.get("/total-animes-pages/", response_class=JSONResponse, status_code=status.HTTP_200_OK)
+@router.get("/total-animes-pages/", response_model=TotalAnimesPages, status_code=status.HTTP_200_OK)
 async def get_total_animes_pages():
     """
     Get total of animes and pages.
 
     Returns:
-    - `JSONResponse`: A JSON response with the total of animes and pages.
+    - `TotalAnimesPages`: Total animes and pages.
     """
     total_animes = animes_collection.count_documents({})
-    return {"total_animes": total_animes, "total_pages": math.ceil(total_animes / page_size)}
+    return total_animes_pages_schema({"total_animes": total_animes, "total_pages": math.ceil(total_animes / page_size)})
 
 
 def find_anime(key, value):
