@@ -5,6 +5,8 @@ from db.client import animes_collection
 from bson import ObjectId
 from pymongo.errors import PyMongoError
 from typing import List
+import math
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/animes",
                    tags=["animes"],
@@ -15,6 +17,9 @@ collation = {'locale': 'en', 'strength': 2}
 
 # Sort the collection by the "name" field using collation
 sort = [("name", 1)]
+
+# Specify the number of documents to skip
+page_size = 4
 
 
 @router.get("/", response_model=List[Anime])
@@ -41,7 +46,6 @@ async def get_paginated_animes(number: int = Query(1, description="Page number t
     - `List[Anime]`: List of paginated animes.
     """
     # Calculate the number of documents to skip
-    page_size = 4
     skip_count = (number - 1) * page_size
 
     # Perform the query on the collection with pagination and sorting
@@ -49,6 +53,18 @@ async def get_paginated_animes(number: int = Query(1, description="Page number t
         collation).sort(sort).skip(skip_count).limit(page_size)
 
     return animes_schema(animes)
+
+
+@router.get("/total-animes-pages/", response_class=JSONResponse, status_code=status.HTTP_200_OK)
+async def get_total_animes_pages():
+    """
+    Get total of animes and pages.
+
+    Returns:
+    - `JSONResponse`: A JSON response with the total of animes and pages.
+    """
+    total_animes = animes_collection.count_documents({})
+    return {"total_animes": total_animes, "total_pages": math.ceil(total_animes / page_size)}
 
 
 def find_anime(key, value):
