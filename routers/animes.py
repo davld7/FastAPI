@@ -10,6 +10,12 @@ router = APIRouter(prefix="/animes",
                    tags=["animes"],
                    responses={status.HTTP_404_NOT_FOUND: {"error": "Not found."}})
 
+# Specify the collation with the case insensitive sort order option
+collation = {'locale': 'en', 'strength': 2}
+
+# Sort the collection by the "name" field using collation
+sort = [("name", 1)]
+
 
 @router.get("/", response_model=List[Anime])
 async def get_animes():
@@ -19,7 +25,7 @@ async def get_animes():
     Returns:
     - `List[Anime]`: List of animes.
     """
-    animes = animes_collection.find()
+    animes = animes_collection.find().collation(collation).sort(sort)
     return animes_schema(animes)
 
 

@@ -12,4 +12,4 @@ def anime_schema(anime) -> Dict:
 
 
 def animes_schema(animes) -> List:
-    return sorted([anime_schema(anime) for anime in animes], key=lambda x: x['name'].lower())
+    return [anime_schema(anime) for anime in animes]
