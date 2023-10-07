@@ -19,7 +19,7 @@ collation = {'locale': 'en', 'strength': 2}
 sort = [("name", 1)]
 
 # Specify the number of documents to skip
-page_size = 4
+page_size = 10
 
 
 @router.get("/", response_model=List[Anime])

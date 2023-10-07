@@ -1,6 +1,6 @@
 # Spacefile Docs: https://deta.space/docs/en/build/reference/spacefile
 v: 0
-icon: ./icon.png
+icon: ./static/images/animelist-logo.png
 app_name: "FastAPI"
 micros:
   - name: FastAPI
@@ -10,3 +10,8 @@ micros:
     primary: true
     public_routes:
       - "/*"
+    presets:
+      env:
+        - name: MONGODB_URI
+          description: MongoDB URI
+          default: ""

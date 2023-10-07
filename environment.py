@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     mongodb_uri: str
 
     class Config:
-        env_file = "file.env"
+        env_file = ".env"
 
 
 @lru_cache()

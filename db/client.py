@@ -10,7 +10,7 @@
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from env_file import settings
+from environment import settings
 
 # Base de datos local
 # db_client = MongoClient().local

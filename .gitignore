@@ -1,7 +1,7 @@
 .space
 __pycache__
 .venv
-file.env
+.env
 build
 dist
 anime_post_gui.spec
