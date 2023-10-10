@@ -19,10 +19,13 @@
 # Swagger http://127.0.0.1:8000/docs
 # Redocly http://127.0.0.1:8000/redoc
 
-from fastapi import FastAPI, status
-from fastapi.responses import HTMLResponse, FileResponse
-from routers import animes
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from pymongo.errors import PyMongoError
+from db.client import client
+from routers import animes
+
 # products, users, basic_auth_users, jwt_auth_users, users_db, animes
 app = FastAPI()
 
@@ -35,18 +38,22 @@ app = FastAPI()
 # app.include_router(users_db.router)
 app.include_router(animes.router)
 
-# Static Files
 
+@app.get("/ping", response_class=JSONResponse, status_code=status.HTTP_200_OK)
+async def send_ping():
+    try:
+        client.admin.command('ping')
+        message = "Pinged your deployment. You successfully connected to MongoDB!"
+        return JSONResponse(content={"message": message})
+    except PyMongoError as exception:
+        detail = str(exception)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=detail)
+
+
+# Static Files
 app.mount("/static/images", StaticFiles(directory="static/images"), name="images")
 # http://127.0.0.1:8000/static/images/lucy.jpg
-
-
-# @app.get("/")
-# async def root():
-#     return {"full_stack_team": ["Roberto David Morales Ramos",
-#                                 "Byron Steven Flores Gaitán",
-#                                 "Brandon Isaac Cruz Reyes",
-#                                 "Jonathan Josué Downs Cruz"]}
 
 
 @app.get("/", response_class=HTMLResponse, status_code=status.HTTP_200_OK)
@@ -75,8 +82,9 @@ async def logo():
 async def icon():
     return FileResponse("static/images/animelist-icon.png", media_type="image/png")
 
-
-# http://127.0.0.1:8000/url
-# @app.get("/url")
-# async def url():
-#     return {"url": "https://github.com/davld7"}
+# @app.get("/")
+# async def root():
+#     return {"full_stack_team": ["Roberto David Morales Ramos",
+#                                 "Byron Steven Flores Gaitán",
+#                                 "Brandon Isaac Cruz Reyes",
+#                                 "Jonathan Josué Downs Cruz"]}

@@ -12,6 +12,6 @@ micros:
       - "/*"
     presets:
       env:
-        - name: MONGODB_URI
-          description: MongoDB URI
+        - name: URI
+          description: URI
           default: ""

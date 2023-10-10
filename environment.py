@@ -1,17 +1,19 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    mongodb_uri: str
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8")
 
-    class Config:
-        env_file = ".env"
+
+class Variables(Settings):
+    uri: str
 
 
 @lru_cache()
-def get_settings() -> Settings:
-    return Settings()
+def get_variables() -> Variables:
+    return Variables()
 
 
-settings = get_settings()
+variables = get_variables()
