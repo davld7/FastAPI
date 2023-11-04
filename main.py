@@ -28,6 +28,8 @@ from routers import animes
 
 # products, users, basic_auth_users, jwt_auth_users, users_db, animes
 app = FastAPI()
+app.title = "Anime List API"
+app.version = "1.0.0"
 
 # Routers
 

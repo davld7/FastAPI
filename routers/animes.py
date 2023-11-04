@@ -6,7 +6,6 @@ from bson import ObjectId
 from pymongo.errors import PyMongoError
 from typing import List
 import math
-from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/animes",
                    tags=["animes"],
@@ -92,7 +91,7 @@ def find_anime(key, value):
 # Path
 
 @router.get("/id/{id}", response_model=Anime, status_code=status.HTTP_200_OK)
-async def anime(id: str = Path(..., min_length=24, max_length=24, regex="^[0-9a-fA-F]{24}$", description="Id of the anime")):
+async def get_anime_by_id(id: str = Path(..., min_length=24, max_length=24, regex="^[0-9a-fA-F]{24}$", description="Id of the anime")):
     """
     Get anime by id.
 
@@ -109,7 +108,7 @@ async def anime(id: str = Path(..., min_length=24, max_length=24, regex="^[0-9a-
 
 
 @router.get("/name/{name}", response_model=Anime, status_code=status.HTTP_200_OK)
-async def anime(name: str = Path(..., description="Name of the anime")):
+async def get_anime_by_name(name: str = Path(..., description="Name of the anime")):
     """
     Get anime by name.
 
@@ -138,7 +137,7 @@ async def anime(name: str = Path(..., description="Name of the anime")):
 
 
 @router.post("/", response_model=Anime, status_code=status.HTTP_201_CREATED)
-async def anime(anime: AnimeToCreate):
+async def create_anime(anime: AnimeToCreate):
     if type(find_anime("name", anime.name)) == Anime:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="El anime ya existe.")
@@ -149,7 +148,7 @@ async def anime(anime: AnimeToCreate):
 
 
 @router.put("/", response_model=Anime)
-async def anime(anime: Anime):
+async def update_anime(anime: Anime):
     anime_dict = dict(anime)
     del anime_dict["id"]
     try:
